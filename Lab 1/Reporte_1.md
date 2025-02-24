@@ -485,6 +485,7 @@ Clase Producto:
 Representa un producto con atributos: nombre, precio y cantidad.
 
 Métodos:
+_ _init_ _: Constructor
 _ _str_ _: Devuelve una representación en cadena del producto.
 vender: Reduce la cantidad en stock cuando se vende el producto.
 disponibilidad: Muestra la cantidad disponible del producto.
@@ -493,6 +494,7 @@ Clase Inventario:
 Gestiona una lista de productos.
 
 Métodos:
+_ _init_ _: Constructor
 agregar_producto: Añade un producto al inventario.
 mostrar_informacion: Muestra la información de un producto específico.
 calcular_valor_total: Calcula el valor total del inventario (precio × cantidad de cada producto).
@@ -502,3 +504,17 @@ Crea productos y los agrega al inventario.
 Muestra la información de los productos.
 Realiza ventas y muestra la disponibilidad actualizada.
 Calcula y muestra el valor total del inventario.
+
+#### Alineación con el Paradigma de POO
+Encapsulamiento:
+Los atributos de Producto (nombre, precio, cantidad) están encapsulados dentro de la clase.
+Solo se accede a ellos a través de métodos públicos como vender y disponibilidad.
+
+Abstracción:
+La clase Inventario abstrae la lógica de gestión de productos, ocultando los detalles de implementación.
+
+Reutilización:
+Las clases Producto e Inventario pueden reutilizarse en otros proyectos o módulos.
+
+Modularidad:
+El código está dividido en clases y métodos, lo que facilita su mantenimiento y escalabilidad.
