@@ -14,5 +14,6 @@ else:
     suma=(n*(n+1))//2
 #Mostramos el resultado de la suma
 print("El resultado de la suma de los enteros desde 1 hasta {n} es: {suma}")
-![image](https://github.com/user-attachments/assets/a7d42c2f-74a4-4e39-b820-e744234c26c2)
+![image](https://github.com/user-attachments/assets/760bd562-39db-4c01-92fd-c391c0d1680b)
+
 
