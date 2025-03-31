@@ -571,7 +571,127 @@ Launch:
 ### Descripción del Programa
 Controlador **PID completo** (Proporcional-Integral-Derivativo) para movimiento 2D + orientación en `turtlesim`:
 
+
+
 ```bash
+#!/usr/bin/env python3
+
+import rospy
+from geometry_msgs.msg import Twist
+from turtlesim.msg import Pose
+from math import atan2, sqrt, radians, sin, cos
+
+class MoveTurtlePIDControl:
+    def __init__(self):
+        rospy.init_node('control_tortuga_pid_xytheta')
+        
+        # Suscriptores y publicadores
+        self.pose_subscriber = rospy.Subscriber('/turtle1/pose', Pose, self.pose_callback)
+        self.velocity_publisher = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
+        self.rate = rospy.Rate(10)
+        
+        # Variables de estado
+        self.current_x = 0
+        self.current_y = 0
+        self.current_theta = 0
+        
+        # Variables para control PID
+        self.last_error_x = 0
+        self.last_error_y = 0
+        self.last_error_theta = 0
+        self.error_accumulation_x = 0
+        self.error_accumulation_y = 0
+        self.error_accumulation_theta = 0
+
+    def pose_callback(self, pose):
+        self.current_x = pose.x
+        self.current_y = pose.y
+        self.current_theta = pose.theta
+
+    def move_turtle_to_desired_pose(self, desired_x, desired_y, desired_theta):
+        # Constantes PID
+        Kp_linear = 1.0
+        Ki_linear = 0.01
+        Kd_linear = 0.1
+        Kp_angular = 4.0
+        Ki_angular = 0.005
+        Kd_angular = 0.5
+
+        while not rospy.is_shutdown():
+            # Cálculo de errores
+            error_x = desired_x - self.current_x
+            error_y = desired_y - self.current_y
+            
+            # Error de orientación
+            target_angle = atan2(error_y, error_x)
+            error_theta = target_angle - self.current_theta
+            error_theta = atan2(sin(error_theta), cos(error_theta))
+            
+            # Distancia al objetivo
+            distance = sqrt(error_x**2 + error_y**2)
+            
+            # Acumulación de errores (término integral)
+            self.error_accumulation_x += error_x
+            self.error_accumulation_y += error_y
+            self.error_accumulation_theta += error_theta
+            
+            # Crear mensaje Twist
+            twist_msg = Twist()
+            
+            if distance > 0.1:  # Fase de acercamiento
+                # Control PID para posición
+                twist_msg.linear.x = Kp_linear * error_x + Ki_linear * self.error_accumulation_x + Kd_linear * (error_x - self.last_error_x)
+                twist_msg.linear.y = Kp_linear * error_y + Ki_linear * self.error_accumulation_y + Kd_linear * (error_y - self.last_error_y)
+                
+                # Control PID para orientación
+                twist_msg.angular.z = Kp_angular * error_theta + Ki_angular * self.error_accumulation_theta + Kd_angular * (error_theta - self.last_error_theta)
+            else:  # Fase de ajuste fino
+                error_theta_final = desired_theta - self.current_theta
+                error_theta_final = atan2(sin(error_theta_final), cos(error_theta_final))
+                
+                self.error_accumulation_theta += error_theta_final
+                twist_msg.angular.z = Kp_angular * error_theta_final + Ki_angular * self.error_accumulation_theta + Kd_angular * (error_theta_final - self.last_error_theta)
+                
+                if abs(error_theta_final) < 0.05:
+                    rospy.loginfo("Pose deseada alcanzada!")
+                    break
+            
+            # Publicar comando
+            self.velocity_publisher.publish(twist_msg)
+            
+            # Actualizar errores anteriores
+            self.last_error_x = error_x
+            self.last_error_y = error_y
+            self.last_error_theta = error_theta
+            
+            # Log de información
+            rospy.loginfo("Pos: (%.2f, %.2f), θ: %.2f rad, Error: (%.2f, %.2f), Error θ: %.2f", 
+                         self.current_x, self.current_y, self.current_theta,
+                         error_x, error_y, error_theta)
+            
+            self.rate.sleep()
+
+    def get_desired_pose_from_user(self):
+        print("\n=== Ingrese la pose deseada ===")
+        x = float(input("Coordenada x: "))
+        y = float(input("Coordenada y: "))
+        theta_deg = float(input("Orientación final (grados): "))
+        return x, y, radians(theta_deg)
+
+    def move_turtle_interactively(self):
+        while not rospy.is_shutdown():
+            try:
+                desired_x, desired_y, desired_theta = self.get_desired_pose_from_user()
+                self.move_turtle_to_desired_pose(desired_x, desired_y, desired_theta)
+            except ValueError:
+                rospy.logwarn("Entrada inválida. Use números.")
+
+if __name__ == '__main__':
+    try:
+        controller = MoveTurtlePIDControl()
+        controller.move_turtle_interactively()
+    except rospy.ROSInterruptException:
+        pass
 
 ```
 
