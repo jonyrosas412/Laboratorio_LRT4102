@@ -112,6 +112,59 @@ Para que el robot se desplace de la posición actual a la posición objetivo, ne
 
    Donde `ATG` es el ángulo calculado en grados entre la orientación actual y la dirección deseada.
 
+### 4. Usar un controlador (libre) para llevar a la tortuga a la posición deseada, hacerlo en bucle infinito.
+# 4.- Usar un controlador (libre) para llevar a la tortuga a la posición deseada, hacerlo en bucle infinito.
+
+Este código implementa un controlador proporcional para mover una tortuga en el simulador de ROS, **Turtlesim**, hacia una posición deseada. A continuación, se describe su funcionamiento.
+
+### Estructura Principal
+
+- **Inicialización de ROS**: Se inicia un nodo de ROS llamado `turtle_proportional_controller` para manejar la comunicación con el simulador.
+  
+- **Suscriptores y Publicadores**:
+  - **`/turtle1/pose`**: Se suscribe a la posición y orientación actual de la tortuga.
+  - **`/turtle1/cmd_vel`**: Publica los comandos de velocidad (lineales y angulares) para mover la tortuga.
+
+### Lógica del Controlador
+
+1. **Obtención de Objetivos**:
+   - Se solicita al usuario ingresar las coordenadas `X` y `Y` del objetivo, junto con el ángulo final `theta`. Las entradas deben estar dentro de un rango específico (0-11 para las coordenadas, y un valor en grados para el ángulo).
+
+2. **Cálculo de Errores**:
+   - El controlador calcula los errores lineales y angulares necesarios para mover la tortuga desde su posición actual hasta el objetivo. Se utilizan las funciones trigonométricas `atan2` y `sqrt` para calcular los ángulos y las distancias.
+
+3. **Movimiento a la Meta**:
+   - El controlador sigue tres fases principales:
+     1. **Rotación hacia el objetivo**: Si la tortuga no está orientada correctamente hacia el objetivo, se ajusta su orientación.
+     2. **Movimiento hacia el objetivo**: Una vez orientada, la tortuga se mueve hacia las coordenadas deseadas.
+     3. **Ajuste de orientación final**: Cuando la tortuga ha alcanzado la posición, ajusta su orientación para coincidir con el ángulo deseado.
+
+4. **Control Proporcional**:
+   - El código usa un controlador proporcional (con ganancias `Kp_linear` y `Kp_angular`) para ajustar las velocidades lineales y angulares en función de los errores calculados.
+
+5. **Bucle Infinito**:
+   - El controlador sigue ejecutándose en un bucle infinito, solicitando nuevos objetivos y moviendo la tortuga hasta alcanzarlos. Si la tortuga alcanza su meta, imprime un mensaje indicando el éxito.
+
+### Funciones y Métodos
+
+- **`pose_callback`**: Actualiza la posición y orientación actuales de la tortuga.
+- **`get_valid_input`**: Solicita al usuario las coordenadas y el ángulo del objetivo, validando las entradas.
+- **`calculate_errors`**: Calcula los errores lineales y angulares en relación con el objetivo.
+- **`move_to_goal`**: Controla el movimiento de la tortuga hacia el objetivo, aplicando las fases de rotación, movimiento y ajuste de orientación.
+- **`print_status`**: Muestra información detallada del estado de la tortuga en cada fase.
+- **`run`**: Ejecuta el controlador en un bucle infinito, solicitando y procesando objetivos hasta que el programa sea interrumpido.
+
+### Conclusiones
+
+El código implementado para controlar el movimiento de la tortuga en el simulador **Turtlesim** utiliza un enfoque de **control proporcional** para mover la tortuga de su posición actual a un objetivo especificado por el usuario. A través de dos scripts en ROS, se abordan diferentes aspectos del control del robot, desde la **teleportación** hasta el **cálculo de errores** y el ajuste de la velocidad lineal y angular.
+
+El primer script, por otro lado, se centra en **teletransportar** a la tortuga a una nueva posición sin moverla físicamente en el espacio. Utilizando el servicio de ROS `teleport_absolute`, la tortuga es posicionada en las coordenadas objetivo con la orientación solicitada, sin requerir una simulación de movimiento real. Además, este script calcula la **DTG** (diferencia de coordenadas) y el **ATG** (ángulo hacia el objetivo) para proporcionar al usuario retroalimentación detallada sobre el movimiento simulado. 
+
+El segundo script, que utiliza un **controlador proporcional**, permite que la tortuga se mueva de manera eficiente hacia el objetivo. Se calcula la **distancia euclidiana (DTG)** y el **ángulo hacia el objetivo (ATG)**, utilizando funciones matemáticas como `atan2` y `sqrt`. El controlador ajusta la **velocidad angular** y **lineal** de la tortuga según la diferencia entre su posición actual y el objetivo. La implementación de un **bucle infinito** permite que la tortuga continúe moviéndose hasta que llegue al destino y se ajuste a la orientación final deseada. Este enfoque de control proporciona una **respuesta dinámica** y ajustable, adaptándose al error calculado en cada iteración.
+
+Ambos enfoques son útiles en diferentes escenarios: el primero para simular un movimiento real hacia un objetivo con control dinámico y el segundo para pruebas rápidas o simulaciones en las que solo se necesita determinar la posición final. Ambos métodos se complementan bien, ya que permiten estudiar y validar algoritmos de control de manera eficiente antes de su implementación en un robot físico.
+
+En resumen, estos scripts proveen un marco flexible para controlar el movimiento de la tortuga en un entorno simulado, ya sea ajustando su velocidad para llegar a un objetivo o teletransportándola instantáneamente a una nueva posición. Ambos métodos aprovechan las capacidades de ROS para el control de robots, permitiendo una interacción sencilla y efectiva con el simulador **Turtlesim**.
 
 
 
