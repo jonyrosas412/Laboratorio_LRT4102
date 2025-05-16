@@ -3,7 +3,7 @@ import rospy
 from std_msgs.msg import String, Float32
 
 class NavigationManager:
-    def __init__(self):  # 
+    def __init__(self):  
         rospy.init_node('navigation_manager')
         self.nav_pub = rospy.Publisher('/nav_commands', String, queue_size=10)
         rospy.Subscriber('/voice_commands', String, self.handle_voice)
@@ -15,7 +15,7 @@ class NavigationManager:
         self.distancia_actual = 999.9
         self.umbral_detencion = 15.0  # cm
 
-        self.etapa = "esperando"  # etapas: esperando, buscando_pasillo, girando, buscando_silla
+        self.etapa = "esperando"  
 
     def handle_voice(self, msg):
         try:
