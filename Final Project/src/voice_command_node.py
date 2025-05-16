@@ -10,10 +10,10 @@ class VoiceCommander:
         
         # Configuración optimizada del reconocedor
         self.recognizer = sr.Recognizer()
-        self.recognizer.energy_threshold = 3000  # Más bajo para mayor sensibilidad
-        self.recognizer.pause_threshold = 0.8  # Menor tiempo de espera entre frases
+        self.recognizer.energy_threshold = 3000 
+        self.recognizer.pause_threshold = 0.8  
         
-        # Selección automática del mejor micrófono
+  
         mic_list = sr.Microphone.list_microphone_names()
         self.microphone = sr.Microphone(device_index=mic_list.index([m for m in mic_list if 'webcam' in m.lower() or 'mic' in m.lower()][0]))
         
