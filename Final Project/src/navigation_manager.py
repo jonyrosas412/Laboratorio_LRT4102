@@ -3,7 +3,7 @@ import rospy
 from std_msgs.msg import String, Float32
 
 class NavigationManager:
-    def __init__(self):  # <-- CORREGIDO
+    def __init__(self):  # 
         rospy.init_node('navigation_manager')
         self.nav_pub = rospy.Publisher('/nav_commands', String, queue_size=10)
         rospy.Subscriber('/voice_commands', String, self.handle_voice)
@@ -42,7 +42,7 @@ class NavigationManager:
         if "qr_pasillo_" in qr:
             p = int(qr.split("_")[2])
             if p == self.pasillo_objetivo:
-                self.nav_pub.publish("girar_qr")  # Nuevo comando específico
+                self.nav_pub.publish("girar_qr") 
                 self.etapa = "girando"
             
         elif "qr_silla_" in qr:
@@ -65,5 +65,5 @@ class NavigationManager:
     def run(self):
         rospy.spin()
 
-if __name__ == '__main__':  # <-- CORREGIDO
+if __name__ == '__main__':  
     NavigationManager().run()
