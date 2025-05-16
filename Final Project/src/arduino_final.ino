@@ -1,4 +1,3 @@
-Código general:
  #define ROS_SERIAL_PROTOCOL_2
 #define USE_OLD_SERIAL_PROTOCOL
 #pragma message("Protocolo 2.0 activado")
@@ -133,7 +132,7 @@ void seguirLineaMejorado() {
   
   if (fL < 0.05 && fC < 0.05 && fR < 0.05) {
     vL = vR = 0;
-    // Opcional: notificar que se perdió la línea
+    
     estado_msg.data = "linea_perdida";
     pub_estado.publish(&estado_msg);
   }
@@ -157,7 +156,7 @@ void seguirLineaMejorado() {
 
 
 float normForce(int raw, int idx, float whiteBase[], float blackBase[], float threshold[], bool invertDetect[]) {
-  // Normaliza lectura a [0,1] según umbral y rangos adaptativos
+ 
   float wb = whiteBase[idx], bb = blackBase[idx], th = threshold[idx];
   float v = raw;
   if (invertDetect[idx]) {
